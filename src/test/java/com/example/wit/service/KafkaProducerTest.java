@@ -3,8 +3,6 @@ package com.example.wit.service;
 import static org.mockito.Mockito.verify;
 
 import com.example.wit.model.CalculatorMessage;
-import com.example.wit.service.KafkaProducerService;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

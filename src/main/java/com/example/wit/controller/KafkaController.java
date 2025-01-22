@@ -23,7 +23,7 @@ public class KafkaController {
             throw new IllegalArgumentException("Invalid operation: " + operation + ".\n" +
                     "operation must be one of 'sum', 'subtract', 'multiply', 'divide'.");
         }
-        CalculatorMessage calculatorMessage = new CalculatorMessage(a, b);
+        CalculatorMessage calculatorMessage = new CalculatorMessage(a, b, operation+"-response");
         kafkaProducerService.sendMessage(operation, calculatorMessage);
         return "CalculatorMessage sent to operation [" + operation + "]: \"" + calculatorMessage + "\"";
     }
