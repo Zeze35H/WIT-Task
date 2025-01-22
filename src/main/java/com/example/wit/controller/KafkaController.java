@@ -1,7 +1,11 @@
 package com.example.wit.controller;
+import com.example.wit.model.CalculatorMessage;
 import com.example.wit.service.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/kafka")
@@ -14,8 +18,13 @@ public class KafkaController {
     }
 
     @PostMapping("/send")
-    public String sendMessage(@RequestParam String topic, @RequestParam String message) {
-        kafkaProducerService.sendMessage(topic, message);
-        return "Message sent to topic [" + topic + "]: \"" + message + "\"";
+    public String sendMessage(@RequestParam String operation, @RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        if (!List.of("sum", "subtract", "multiply", "divide").contains(operation)) {
+            throw new IllegalArgumentException("Invalid operation: " + operation + ".\n" +
+                    "operation must be one of 'sum', 'subtract', 'multiply', 'divide'.");
+        }
+        CalculatorMessage calculatorMessage = new CalculatorMessage(a, b);
+        kafkaProducerService.sendMessage(operation, calculatorMessage);
+        return "CalculatorMessage sent to operation [" + operation + "]: \"" + calculatorMessage + "\"";
     }
 }

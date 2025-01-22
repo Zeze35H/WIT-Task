@@ -2,6 +2,7 @@ package com.example.wit.service;
 
 import static org.mockito.Mockito.verify;
 
+import com.example.wit.model.CalculatorMessage;
 import com.example.wit.service.KafkaProducerService;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class KafkaProducerTest {
 
     @Mock
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, CalculatorMessage> kafkaTemplate;
 
     @InjectMocks
     private KafkaProducerService kafkaProducer;
@@ -24,7 +25,8 @@ public class KafkaProducerTest {
 
     @Test
     public void testSendMessage() {
-        kafkaProducer.sendMessage("my-topic", "TestMessage");
-        verify(kafkaTemplate).send("my-topic", "TestMessage");
+        CalculatorMessage calculatorMessage = new CalculatorMessage();
+        kafkaProducer.sendMessage("sum", calculatorMessage);
+        verify(kafkaTemplate).send("sum", calculatorMessage);
     }
 }

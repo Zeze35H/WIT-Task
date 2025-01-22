@@ -1,3 +1,4 @@
+
 # WIT Task
 
 This is a coding challenge developed for [WIT Software](https://www.wit-software.com/). It consists of a RESTful API that provides the basic functionalities of a calculator. Built using Spring Boot, Maven, and Apache Kafka.
@@ -23,12 +24,31 @@ mvn spring:boot run
 
 ## Testing
 
-### Testing the program
+### Testing with REST API Requests
+
+#### Testing the Calculator Program
+
+| Operation |   Example   | HTTP Method |                                            REST API Query                                            |
+|:---------:|:-----------:|:---------:|:----------------------------------------------------------------------------------------------------:|
+|    Sum    | 1.23 + 4.56 |    GET    |      [link](http://localhost:8080/api/sum?a=1.23&b=4.56)      |
+|  Subtract | 1.23 - 4.56 |    GET    | [ink](http://localhost:8080/api/subtract?a=1.23&b=4.56) |
+|  Multiply | 1.23 * 4.56 |    GET    |      [link](http://localhost:8080/api/multiply?a=1.23&b=4.56)      |
+|   Divide  | 1.23 / 4.56 |    GET    |      [link](http://localhost:8080/api/divide?a=1.23&b=4.56)      |
+
+#### Testing the Kafka Service
+
+| Operation |   Example   | HTTP Method |                                            REST API Query                                            |
+|:---------:|:-----------:|:---------:|:----------------------------------------------------------------------------------------------------:|
+|    Sum    | 1.23 + 4.56 |    POST    |      [link](http://localhost:8080/api/kafka/send?operation=sum&a=1.23&b=4.56)      |
+|  Subtract | 1.23 - 4.56 |    POST    | [ink](http://localhost:8080/api/kafka/send?operation=subtract&a=1.23&b=4.56) |
+|  Multiply | 1.23 * 4.56 |    POST    |      [link](http://localhost:8080/api/kafka/send?operation=multiply&a=1.23&b=4.56)      |
+|   Divide  | 1.23 / 4.56 |    POST    |      [link](http://localhost:8080/api/kafka/send?operation=divide&a=1.23&b=4.56)      |
+
+### Testing with Unit Tests
 
 ```bash
 mvn test
 ```
-
 
 ### Testing Kafka individually
 

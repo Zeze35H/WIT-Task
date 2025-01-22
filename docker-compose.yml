@@ -18,5 +18,6 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "sum:1:1,subtract:1:1,multiply:1:1,divide:1:1"
     ports:
       - "9092:9092"
