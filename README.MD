@@ -1,18 +1,34 @@
-
 # WIT Task
 
 This is a coding challenge developed for [WIT Software](https://www.wit-software.com/). It consists of a RESTful API that provides the basic functionalities of a calculator. Built using Spring Boot, Maven, and Apache Kafka.
+
+## Features
+
+This program allows users to use a RESTful API for sum, subtraction, multiplication and division of two arbitrary precision signed decimal numbers.
+
+### Essential requirements
+- [x] Maven project with 4 modules: controller, model, serive and utils
+- [x] Spring Boot as the foundation for all required modules
+- [x] Apache Kafka for communication between modules
+- [x] Docker for environment deployment
+- [x] Unit testing
+
+### Bonus requirements
+- [x] *SLF4J:*  Add SLF4J logger support to both modules so that log messages are generated for every input/output event and errors. Configure an actual logging implementation at your choice (Log4J, Logback, etc.) with an appender to file (+2)
+- [x] *Unique identifiers:*  Assigning a unique identifier to each individual REST request and communication to their respective customers via a response header (+3)
+- [ ] *MDC Propagation:*  Propagation of the request identifier through the MDC in the inter-module communication and inclusion of it in each logging line that concerns an HTTP request in all modules (+5)
+
 ## Installation
 
-```bash
-mvn clean install
-```
 Setting up the docker environment:
-
 ```bash
 docker-compose up
 ```
 
+Setting up the program:
+```bash
+mvn clean install
+```
 ---
 
 ## Usage
@@ -22,11 +38,13 @@ Running the application
 mvn spring:boot run
 ```
 
-## Testing
+Send GET Requests using the following template:
 
-### Testing with REST API Requests
+```
+http://localhost:8080/api/<operation>?a=<first_number>&b=<second_number>
+```
 
-#### Testing the Calculator Program
+Here are some predefined examples:
 
 | Operation |   Example   | HTTP Method |                                            REST API Query                                            |
 |:---------:|:-----------:|:---------:|:----------------------------------------------------------------------------------------------------:|
@@ -34,6 +52,14 @@ mvn spring:boot run
 |  Subtract | 1.23 - 4.56 |    GET    | [ink](http://localhost:8080/api/subtract?a=1.23&b=4.56) |
 |  Multiply | 1.23 * 4.56 |    GET    |      [link](http://localhost:8080/api/multiply?a=1.23&b=4.56)      |
 |   Divide  | 1.23 / 4.56 |    GET    |      [link](http://localhost:8080/api/divide?a=1.23&b=4.56)      |
+
+## Testing
+
+### Testing with Unit Tests
+
+```bash
+mvn test
+```
 
 #### Testing the Kafka Service
 
@@ -44,11 +70,6 @@ mvn spring:boot run
 |  Multiply | 1.23 * 4.56 |    POST    |      [link](http://localhost:8080/api/kafka/send?operation=multiply&a=1.23&b=4.56)      |
 |   Divide  | 1.23 / 4.56 |    POST    |      [link](http://localhost:8080/api/kafka/send?operation=divide&a=1.23&b=4.56)      |
 
-### Testing with Unit Tests
-
-```bash
-mvn test
-```
 
 ### Testing Kafka individually
 

@@ -59,6 +59,10 @@ public class CalculatorController {
     }
 
     private ResponseEntity<BigDecimal> processOperation(BigDecimal a, BigDecimal b, String operation, String responseTopic) {
+        if (a == null || b == null || operation == null || operation.isEmpty() || responseTopic == null || responseTopic.isEmpty()) {
+            throw new IllegalArgumentException("Argument cannot be null or empty.");
+        }
+
         String requestId = UUID.randomUUID().toString();
         CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
         setupListener(responseTopic, future, requestId);
