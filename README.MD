@@ -14,9 +14,9 @@ This program allows users to use a RESTful API for sum, subtraction, multiplicat
 - [x] Unit testing
 
 ### Bonus requirements
-- [x] *SLF4J:*  Add SLF4J logger support to both modules so that log messages are generated for every input/output event and errors. Configure an actual logging implementation at your choice (Log4J, Logback, etc.) with an appender to file (+2)
-- [x] *Unique identifiers:*  Assigning a unique identifier to each individual REST request and communication to their respective customers via a response header (+3)
-- [ ] *MDC Propagation:*  Propagation of the request identifier through the MDC in the inter-module communication and inclusion of it in each logging line that concerns an HTTP request in all modules (+5)
+- [x] *SLF4J:* Add SLF4J logger support to both modules so that log messages are generated for every input/output event and errors. Configure an actual logging implementation at your choice (Log4J, Logback, etc.) with an appender to file (+2)
+- [x] *Unique identifiers:* Assigning a unique identifier to each individual REST request and communication to their respective customers via a response header (+3)
+- [ ] ~~*MDC Propagation:* Propagation of the request identifier through the MDC in the inter-module communication and inclusion of it in each logging line that concerns an HTTP request in all modules (+5)~~
 
 ## Installation
 
