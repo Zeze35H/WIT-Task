@@ -7,7 +7,7 @@ This is a coding challenge developed for [WIT Software](https://www.wit-software
 This program allows users to use a RESTful API for sum, subtraction, multiplication and division of two arbitrary precision signed decimal numbers.
 
 ### Essential requirements
-- [x] Maven project with 4 modules: controller, model, serive and utils
+- [x] Maven project with 4 modules: controller, model, service and utils
 - [x] Spring Boot as the foundation for all required modules
 - [x] Apache Kafka for communication between modules
 - [x] Docker for environment deployment
