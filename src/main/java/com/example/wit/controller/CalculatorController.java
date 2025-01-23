@@ -2,13 +2,17 @@ package com.example.wit.controller;
 
 import com.example.wit.model.ResponseMessage;
 import com.example.wit.service.KafkaProducerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping("/api")
 public class CalculatorController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalculatorController.class);
 
     private final KafkaProducerService kafkaProducerService;
     private final ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory;
@@ -30,40 +36,45 @@ public class CalculatorController {
     }
 
     @GetMapping("/sum")
-    public ResponseEntity<BigDecimal> sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
+    public ResponseEntity<BigDecimal> sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
         return processOperation(a, b, "sum", "sum-response");
     }
 
     @GetMapping("/subtract")
-    public ResponseEntity<BigDecimal> subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
+    public ResponseEntity<BigDecimal> subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
         return processOperation(a, b, "subtract", "subtract-response");
     }
 
     @GetMapping("/multiply")
-    public ResponseEntity<BigDecimal> multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
+    public ResponseEntity<BigDecimal> multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
         return processOperation(a, b, "multiply", "multiply-response");
     }
 
     @GetMapping("/divide")
-    public ResponseEntity<BigDecimal> divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
+    public ResponseEntity<BigDecimal> divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
         if (b.compareTo(BigDecimal.ZERO) == 0) {
             throw new ArithmeticException("Division by zero is not allowed.");
         }
         return processOperation(a, b, "divide", "divide-response");
     }
 
-    private ResponseEntity<BigDecimal> processOperation(BigDecimal a, BigDecimal b, String operation, String responseTopic) throws ExecutionException, InterruptedException {
+    private ResponseEntity<BigDecimal> processOperation(BigDecimal a, BigDecimal b, String operation, String responseTopic) {
         String requestId = UUID.randomUUID().toString();
         CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
         setupListener(responseTopic, future, requestId);
 
         kafkaProducerService.sendCalculatorMessage(operation, a, b, requestId, responseTopic);
 
-        ResponseMessage response = future.get();
-        System.out.println("[" + operation + "] Received response: " + response.toString());
-        return ResponseEntity.ok()
-                .header("X-Request-ID", response.getRequestId())
-                .body(response.getResult());
+        try {
+            ResponseMessage response = future.get();
+            logger.info("[{}] Received response: {}", operation, response);
+            return ResponseEntity.ok()
+                    .header("X-Request-ID", response.getRequestId())
+                    .body(response.getResult());
+        } catch (ExecutionException | InterruptedException e) {
+            logger.error("Error processing operation [{}]: {}", operation, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing request");
+        }
     }
 
     private void setupListener(String topic, CompletableFuture<ResponseMessage> future, String requestId) {
