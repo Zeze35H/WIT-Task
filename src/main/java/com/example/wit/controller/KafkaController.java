@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/kafka")
@@ -23,7 +24,7 @@ public class KafkaController {
             throw new IllegalArgumentException("Invalid operation: " + operation + ".\n" +
                     "operation must be one of 'sum', 'subtract', 'multiply', 'divide'.");
         }
-        CalculatorMessage calculatorMessage = new CalculatorMessage(a, b, operation+"-response");
+        CalculatorMessage calculatorMessage = new CalculatorMessage(a, b, UUID.randomUUID().toString(), operation+"-response");
         kafkaProducerService.sendMessage(operation, calculatorMessage);
         return "CalculatorMessage sent to operation [" + operation + "]: \"" + calculatorMessage + "\"";
     }

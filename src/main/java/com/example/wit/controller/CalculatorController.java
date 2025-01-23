@@ -1,6 +1,7 @@
 package com.example.wit.controller;
 
 import com.example.wit.model.CalculatorMessage;
+import com.example.wit.model.ResponseMessage;
 import com.example.wit.service.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -10,6 +11,7 @@ import org.springframework.kafka.listener.MessageListener;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,35 +31,50 @@ public class CalculatorController {
 
     @GetMapping("/sum")
     public BigDecimal sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
-        CalculatorMessage message = new CalculatorMessage(a, b, "sum-response");
-        CompletableFuture<BigDecimal> future = new CompletableFuture<>();
+        String requestId = UUID.randomUUID().toString();
+        CalculatorMessage message = new CalculatorMessage(a, b, requestId, "sum-response");
 
-        setupListener(message.getResponseTopic(), future);
+        CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
+
+        setupListener(message.getResponseTopic(), future, requestId);
         kafkaProducerService.sendMessage("sum", message);
 
-        return future.get();
+        ResponseMessage response = future.get();
+        System.out.println("Received response: " + response.toString());
+
+        return response.getResult();
     }
 
     @GetMapping("/subtract")
     public BigDecimal subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
-        CalculatorMessage message = new CalculatorMessage(a, b, "subtract-response");
-        CompletableFuture<BigDecimal> future = new CompletableFuture<>();
+        String requestId = UUID.randomUUID().toString();
+        CalculatorMessage message = new CalculatorMessage(a, b, requestId, "subtract-response");
 
-        setupListener(message.getResponseTopic(), future);
+        CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
+
+        setupListener(message.getResponseTopic(), future, requestId);
         kafkaProducerService.sendMessage("subtract", message);
 
-        return future.get();
+        ResponseMessage response = future.get();
+        System.out.println("Received response: " + response.toString());
+
+        return response.getResult();
     }
 
     @GetMapping("/multiply")
     public BigDecimal multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) throws ExecutionException, InterruptedException {
-        CalculatorMessage message = new CalculatorMessage(a, b, "multiply-response");
-        CompletableFuture<BigDecimal> future = new CompletableFuture<>();
+        String requestId = UUID.randomUUID().toString();
+        CalculatorMessage message = new CalculatorMessage(a, b, requestId, "multiply-response");
 
-        setupListener(message.getResponseTopic(), future);
+        CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
+
+        setupListener(message.getResponseTopic(), future, requestId);
         kafkaProducerService.sendMessage("multiply", message);
 
-        return future.get();
+        ResponseMessage response = future.get();
+        System.out.println("Received response: " + response.toString());
+
+        return response.getResult();
     }
 
     @GetMapping("/divide")
@@ -65,20 +82,28 @@ public class CalculatorController {
         if (b.compareTo(BigDecimal.ZERO) == 0) {
             throw new ArithmeticException("Division by zero is not allowed.");
         }
-        CalculatorMessage message = new CalculatorMessage(a, b, "divide-response");
-        CompletableFuture<BigDecimal> future = new CompletableFuture<>();
+        String requestId = UUID.randomUUID().toString();
+        CalculatorMessage message = new CalculatorMessage(a, b, requestId, "divide-response");
 
-        setupListener(message.getResponseTopic(), future);
+        CompletableFuture<ResponseMessage> future = new CompletableFuture<>();
+
+        setupListener(message.getResponseTopic(), future, requestId);
         kafkaProducerService.sendMessage("divide", message);
 
-        return future.get();
+        ResponseMessage response = future.get();
+        System.out.println("Received response: " + response.toString());
+
+        return response.getResult();
     }
 
-    private void setupListener(String topic, CompletableFuture<BigDecimal> future) {
+    private void setupListener(String topic, CompletableFuture<ResponseMessage> future, String requestId) {
         // Create a temporary Kafka listener
         ContainerProperties containerProps = new ContainerProperties(topic);
-        containerProps.setMessageListener((MessageListener<String, String>) record -> {
-            future.complete(new BigDecimal(record.value()));
+        containerProps.setMessageListener((MessageListener<String, ResponseMessage>) record -> {
+            ResponseMessage response = record.value();
+            if (response.getRequestId().equals(requestId)) {
+                future.complete(record.value());
+            }
         });
 
         KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(

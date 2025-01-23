@@ -1,22 +1,26 @@
 package com.example.wit.model;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class CalculatorMessage {
 
     private BigDecimal a;
     private BigDecimal b;
+    private String requestId;
     private String responseTopic;
 
     public CalculatorMessage() {
         this.a = new BigDecimal(1);
         this.b = new BigDecimal(1);
+        this.requestId = UUID.randomUUID().toString();
         this.responseTopic = "default-response";
     }
 
-    public CalculatorMessage(BigDecimal a, BigDecimal b, String responseTopic) {
+    public CalculatorMessage(BigDecimal a, BigDecimal b, String requestId, String responseTopic) {
         this.a = a;
         this.b = b;
+        this.requestId = requestId;
         this.responseTopic = responseTopic;
     }
 
@@ -36,6 +40,14 @@ public class CalculatorMessage {
         this.b = b;
     }
 
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
     public String getResponseTopic() {
         return responseTopic;
     }
@@ -45,6 +57,6 @@ public class CalculatorMessage {
     }
 
     public String toString() {
-        return "CalculatorMessage(a=" + a + ", b=" + b + ", responseTopic=" + responseTopic + ")";
+        return "CalculatorMessage(a=" + a + ", b=" + b + ", requestId=" + requestId + ", responseTopic=" + responseTopic + ")";
     }
 }
